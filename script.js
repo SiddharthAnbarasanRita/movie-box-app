@@ -1,10 +1,14 @@
 
 // API information.
-const apiUrl = 'https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=04c35731a5ee918f014970082a0088b1&page=1';
+const apiUrl = 'https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=04c35731a5ee918f014970082a0088b1';
 const IMGPATH = "https://image.tmdb.org/t/p/w1280";
 const SEARCHAPI =
     "https://api.themoviedb.org/3/search/movie?&api_key=04c35731a5ee918f014970082a0088b1&query=";
 // Selecting our Elements.
+let pageCount = 1;
+let pageHeight = 1800;
+let pageLimit = 5;
+let isSearchResult = false;
 
 // step 1
 const main = document.getElementById("main");
@@ -17,6 +21,7 @@ showMovies(apiUrl);
 function showMovies(url){
     fetch(url).then(res => res.json())
     .then(function(data){
+    pageLimit = data.total_pages;
     data.results.forEach(element => {
       // Creating elemnts for our data inside the main tag. 
         // step 2
@@ -45,11 +50,34 @@ form.addEventListener("submit", (e) => {
   
   if (searchName) {
     showMovies(SEARCHAPI + searchName);
-    
-    search.value="";
-    
-    
+    isSearchResult = true;
+    // search.value="";
+  } else {
+    showMovies(apiUrl);
+    isSearchResult = false;
+
   }
+  pageCount=1;
     
     
 });
+
+
+
+window.addEventListener('scroll', function() {
+    console.log(window.pageYOffset);
+
+    if(this.window.pageYOffset >= pageHeight * pageCount) {
+        if (pageCount < pageLimit ) {
+            pageCount++;
+            console.log("showing Next Page");
+            console.log("pageLimit: " + pageLimit);
+            showMovies(apiUrl + '&page=' + pageCount);
+        }
+        
+           
+    
+    }
+
+  });
+
